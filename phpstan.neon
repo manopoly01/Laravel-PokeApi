@@ -1,0 +1,6 @@
+includes:
+    - ./vendor/hosttech/defaults/phpstan.neon
+
+parameters:
+    paths:
+        - src/

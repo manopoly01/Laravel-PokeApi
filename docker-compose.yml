@@ -1,0 +1,54 @@
+version: '3.8'
+networks:
+    app-tier:
+        driver: bridge
+
+services:
+    web:
+        container_name: laravel
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        volumes:
+            - .:/var/www/html/
+        networks:
+            - app-tier
+        ports:
+            - "8000:80"
+
+    mysql:
+        container_name: mysql
+        image: mariadb:10.2
+        command: mysqld --sql_mode=""
+        networks:
+            - app-tier
+        ports:
+            - "23306:3306"
+        volumes:
+            - mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+
+    mysql-test:
+        container_name: mysql-test
+        image: mariadb:10.2
+        command: mysqld --sql_mode=""
+        networks:
+            - app-tier
+        volumes:
+            - mysql_testing:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+
+
+volumes:
+    mysql:
+        driver: "local"
+    mysql_testing:
+        driver: "local"
