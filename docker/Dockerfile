@@ -6,7 +6,7 @@ ENV PATH="./vendor/bin:${PATH}" \
     PHP_OPCACHE_MAX_ACCELERATED_FILES="6000" \
     PHP_OPCACHE_MEMORY_CONSUMPTION="128"
 
-RUN pecl install apcu && docker-php-ext-enable apcu
+RUN pecl install apcu pcov && docker-php-ext-enable apcu pcov
 
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \

@@ -9,6 +9,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Livewire\Component;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class AllPokemons extends Component
 {
@@ -16,10 +18,10 @@ class AllPokemons extends Component
 
     public ?string $type = null;
 
-    public function mount(string $name, PokemonService $pokemonService): void
+    public function mount(string $type, PokemonService $pokemonService): void
     {
-        $this->pokemonList = $pokemonService->getByType($name);
-        $this->type = $name;
+        $this->pokemonList = $pokemonService->getByType($type);
+        $this->type = $type;
     }
 
     public function render(): View|Factory
