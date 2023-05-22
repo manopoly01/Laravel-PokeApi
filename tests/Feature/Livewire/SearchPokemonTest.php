@@ -1,27 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Livewire\SearchPokemon;
 use App\Services\PokemonService;
 use Livewire\Livewire;
 use Mockery\MockInterface;
 
-it('can search a pokemon and view all results', function () {
+it('can search a pokemon and view all results', function (): void {
     $pokemonList = [
         [
             'id' => '1',
-            'name' => 'bulbasaur'
+            'name' => 'bulbasaur',
         ],
         [
             'id' => '2',
-            'name' => 'ivysaur'
+            'name' => 'ivysaur',
         ],
         [
             'id' => '3',
-            'name' => 'venusaur'
+            'name' => 'venusaur',
         ],
     ];
 
-    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemonList) {
+    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemonList): void {
         $mock->shouldReceive('searchByPokemonName')->once()->andReturn($pokemonList);
     });
 

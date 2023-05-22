@@ -1,31 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Livewire\AllTypes;
 use App\Services\PokemonService;
 use Livewire\Livewire;
 use Mockery\MockInterface;
 
-it('can show all the types on the page', function () {
+it('can show all the types on the page', function (): void {
     $typesArray = [
         [
             'name' => 'normal',
-            'url' => 'https://pokeapi.co/api/v2/type/1/'
+            'url' => 'https://pokeapi.co/api/v2/type/1/',
         ],
         [
             'name' => 'fighting',
-            'url' => 'https://pokeapi.co/api/v2/type/2/'
+            'url' => 'https://pokeapi.co/api/v2/type/2/',
         ],
         [
             'name' => 'flying',
-            'url' => 'https://pokeapi.co/api/v2/type/3/'
+            'url' => 'https://pokeapi.co/api/v2/type/3/',
         ],
         [
             'name' => 'poison',
-            'url' => 'https://pokeapi.co/api/v2/type/4/'
-        ]
+            'url' => 'https://pokeapi.co/api/v2/type/4/',
+        ],
     ];
 
-    $this->mock(PokemonService::class, function (MockInterface $mock) use ($typesArray) {
+    $this->mock(PokemonService::class, function (MockInterface $mock) use ($typesArray): void {
         $mock->shouldReceive('getTypes')->once()->andReturn($typesArray);
     });
 

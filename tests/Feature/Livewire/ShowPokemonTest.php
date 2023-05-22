@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Livewire\ShowPokemon;
 use App\Services\PokemonService;
 use Livewire\Livewire;
 use Mockery\MockInterface;
 
-it('can show a single pokemon with all stats', function () {
+it('can show a single pokemon with all stats', function (): void {
     $pokemon = [
         'id' => 16,
         'name' => 'pidgey',
@@ -19,19 +21,19 @@ it('can show a single pokemon with all stats', function () {
         'specialAttack' => 35,
         'specialDefense' => 35,
         'speed' => 56,
-        'noDamageTo' => [['name' =>'ghost']],
-        'noDamageFrom' => [['name' =>'ghost'], ['name' =>'ground']],
-        'halfDamageTo' => [['name' =>'rock'], ['name' =>'steel']],
-        'halfDamageFrom' => [['name' =>'fighting'], ['name' =>'bug']],
-        'doubleDamageTo' => [['name' =>'bug'], ['name' =>'grass']],
-        'doubleDamageFrom' => [['name' =>'electric'], ['name' =>'ice']],
+        'noDamageTo' => [['name' => 'ghost']],
+        'noDamageFrom' => [['name' => 'ghost'], ['name' => 'ground']],
+        'halfDamageTo' => [['name' => 'rock'], ['name' => 'steel']],
+        'halfDamageFrom' => [['name' => 'fighting'], ['name' => 'bug']],
+        'doubleDamageTo' => [['name' => 'bug'], ['name' => 'grass']],
+        'doubleDamageFrom' => [['name' => 'electric'], ['name' => 'ice']],
         'frontImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
         'backImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/16.png',
         'artwork' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/16.png',
         'types' => [['type' => ['name' => 'normal']], ['type' => ['name' => 'flying']]],
     ];
 
-    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemon) {
+    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemon): void {
         $mock->shouldReceive('getByName')->once()->andReturn($pokemon);
     });
 
@@ -61,6 +63,6 @@ it('can show a single pokemon with all stats', function () {
             'fighting',
             'bug',
             'electric',
-            'ice'
+            'ice',
         ]);
 });

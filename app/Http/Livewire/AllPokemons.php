@@ -9,8 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Livewire\Component;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class AllPokemons extends Component
 {
