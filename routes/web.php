@@ -19,5 +19,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', AllTypes::class);
-Route::get('/type/{name}', AllPokemons::class);
+Route::get('/type/{type}', AllPokemons::class);
 Route::get('/pokemon/{name}', ShowPokemon::class);

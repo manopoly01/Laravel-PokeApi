@@ -61,19 +61,19 @@
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">No Damage To</span>
                         @foreach($noDamageTo as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Half Damage To</span>
                         @foreach($halfDamageTo as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Double Damage To</span>
                         @foreach($doubleDamageTo as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                 </div>
@@ -84,19 +84,19 @@
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">No Damage From</span>
                         @foreach($noDamageFrom as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Half Damage From</span>
                         @foreach($halfDamageFrom as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Double Damage From</span>
                         @foreach($doubleDamageFrom as $type)
-                            <a href="/type/{{ $type['name'] }}" class="rounded-full mx-1 mb-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['name'] }}-bg text-pokemon-{{ $type['name'] }}-text">{{ $type['name'] }}</a>
+                            <x-type-button :name="$type['name']" />
                         @endforeach
                     </div>
                 </div>
