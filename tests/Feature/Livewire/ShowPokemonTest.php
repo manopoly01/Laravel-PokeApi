@@ -7,7 +7,7 @@ use App\Services\PokemonService;
 use Livewire\Livewire;
 use Mockery\MockInterface;
 
-it('can show a single pokemon with all stats', function (): void {
+it('can show a single pokemon with all stats and evolutions', function (): void {
     $pokemon = [
         'id' => 16,
         'name' => 'pidgey',
@@ -33,8 +33,24 @@ it('can show a single pokemon with all stats', function (): void {
         'types' => [['type' => ['name' => 'normal']], ['type' => ['name' => 'flying']]],
     ];
 
-    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemon): void {
+    $evolutions = [
+        [
+            'id' => '172',
+            'name' => 'pichu',
+        ],
+        [
+            'id' => '25',
+            'name' => 'pikachu',
+        ],
+        [
+            'id' => '26',
+            'name' => 'raichu',
+        ],
+    ];
+
+    $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemon, $evolutions): void {
         $mock->shouldReceive('getByName')->once()->andReturn($pokemon);
+        $mock->shouldReceive('getEvolutionChain')->once()->andReturn($evolutions);
     });
 
     Livewire::test(ShowPokemon::class, ['pidgey'])
@@ -64,5 +80,12 @@ it('can show a single pokemon with all stats', function (): void {
             'bug',
             'electric',
             'ice',
+            'Evolutions',
+            'pichu',
+            '172',
+            'pikachu',
+            '25',
+            'raichu',
+            '26',
         ]);
 });

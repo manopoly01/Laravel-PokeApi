@@ -19,6 +19,52 @@ class PokemonService
         return Http::baseUrl(self::BASE_URL);
     }
 
+    public function getEvolutionChain(string $name): null|array
+    {
+        $response = $this->getClient()->get('pokemon-species/' . $name);
+        $speciesData = $response->json();
+
+        if ($speciesData == null) {
+            return null;
+        }
+
+        $evolutionChainResponse = $this->getClient()->get($speciesData['evolution_chain']['url']);
+        $evolutionChainData = $evolutionChainResponse->json();
+
+        $evolutions = $this->parseEvolutionChain($evolutionChainData['chain']);
+
+        $evolutionList = [];
+        foreach ($evolutions as $evolution) {
+            $evolutionList[] = [
+                'id' => $evolution['id'],
+                'name' => $evolution['name'],
+            ];
+        }
+
+        return $evolutionList;
+    }
+
+    private function parseEvolutionChain(array $chain): array
+    {
+        $evolutions = [];
+
+        $speciesName = $chain['species']['name'];
+        $speciesId = basename(parse_url($chain['species']['url'], PHP_URL_PATH));
+
+        $evolutions[] = [
+            'id' => $speciesId,
+            'name' => $speciesName,
+        ];
+
+        if (isset($chain['evolves_to']) && count($chain['evolves_to']) > 0) {
+            foreach ($chain['evolves_to'] as $evolution) {
+                $evolutions = array_merge($evolutions, $this->parseEvolutionChain($evolution));
+            }
+        }
+
+        return $evolutions;
+    }
+
     public function searchByPokemonName(string $name): array
     {
         $pokemons = $this->getList(['limit' => 10000])['pokemonList'];

@@ -103,4 +103,18 @@
             </div>
         </div>
     </div>
+    @if($evolutionChain)
+        <div class="flex flex-col items-center max-w-2xl bg-gray-100 mx-auto rounded-lg border border-gray-300 py-5 mb-5">
+            <p class="uppercase font-semibold mb-2">Evolutions</p>
+            <div class="flex justify-center">
+                @foreach($evolutionChain as $pokemon)
+                    <a class="flex flex-col items-center bg-gray-200 rounded-lg mx-3 my-2 p-3 hover:bg-gray-300 transition" href="/pokemon/{{ $pokemon['name'] }}">
+                        <img class="w-24 h-24" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ $pokemon['id'] }}.png" alt="{{ $pokemon['name'] }}-image">
+                        <p class="text-center uppercase">{{ $pokemon['name'] }}</p>
+                        <p class="text-center">#{{ $pokemon['id'] }}</p>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>

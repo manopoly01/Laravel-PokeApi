@@ -437,3 +437,81 @@ it('can return an array with the details from a single pokemon', function (): vo
         ],
     ]);
 });
+
+it('can create the evolution-chain for a pokemon', function (): void {
+    Http::fake(
+        [
+            'https://pokeapi.co/api/v2/pokemon-species/*' => Http::response(
+                [
+                    'evolution_chain' => [
+                        'url' => 'https://pokeapi.co/api/v2/evolution-chain/10/',
+                    ],
+                ],
+                200,
+                ['Content-Type' => 'application/json'],
+            ),
+            'https://pokeapi.co/api/v2/evolution-chain/*' => Http::response(
+                [
+                    'chain' => [
+                        'evolves_to' => [
+                            [
+                                'evolves_to' => [
+                                    [
+                                        'evolves_to' => [],
+                                        'species' => [
+                                            'name' => 'raichu',
+                                            'url' => 'https://pokeapi.co/api/v2/pokemon-species/26/',
+                                        ],
+                                    ],
+                                ],
+                                'species' => [
+                                    'name' => 'pikachu',
+                                    'url' => 'https://pokeapi.co/api/v2/pokemon-species/25/',
+                                ],
+                            ],
+                        ],
+                        'species' => [
+                            'name' => 'pichu',
+                            'url' => 'https://pokeapi.co/api/v2/pokemon-species/172/',
+                        ],
+                    ],
+                ],
+                200,
+                ['Content-Type' => 'application/json'],
+            ),
+        ],
+    );
+
+    $result = app(PokemonService::class)->getEvolutionChain('pikachu');
+
+    expect($result)->toBe([
+        [
+            'id' => '172',
+            'name' => 'pichu',
+        ],
+        [
+            'id' => '25',
+            'name' => 'pikachu',
+        ],
+        [
+            'id' => '26',
+            'name' => 'raichu',
+        ],
+    ]);
+});
+
+it('can return null if there is no evolution', function (): void {
+    Http::fake(
+        [
+            'https://pokeapi.co/api/v2/pokemon-species/*' => Http::response(
+                [],
+                200,
+                ['Content-Type' => 'application/json'],
+            ),
+        ],
+    );
+
+    $result = app(PokemonService::class)->getEvolutionChain('charizard-gmax');
+
+    expect($result)->toBeNull();
+});

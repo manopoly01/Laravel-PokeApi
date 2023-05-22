@@ -35,6 +35,7 @@ class ShowPokemon extends Component
 
     public ?array $abilities = null;
     public ?array $descriptions = null;
+    public ?array $evolutionChain = null;
 
     public function mount(string $name, PokemonService $pokemonService): void
     {
@@ -61,6 +62,8 @@ class ShowPokemon extends Component
         $this->speed = $this->pokemon['speed'];
         $this->abilities = $this->pokemon['abilities'];
         $this->descriptions = $this->pokemon['descriptions'];
+
+        $this->evolutionChain = $pokemonService->getEvolutionChain($name);
     }
     public function render(): View|Factory
     {
