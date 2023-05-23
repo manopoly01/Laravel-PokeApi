@@ -27,10 +27,10 @@
     {{ $slot }}
 </div>
 
-<footer class="bg-gray-900 py-8">
+<footer class="bg-yellow-500 py-8">
     <div class="container mx-auto flex items-center justify-center">
         <img src="https://img.freepik.com/free-icon/pokeball_318-437806.jpg?w=360" alt="Pokemon Logo" class="h-10 mr-4">
-        <p class="text-white text-sm">© 2023 PokéApi by Manuel. All rights reserved.</p>
+        <p class="text-gray-800 text-sm">© 2023 PokéApi by Manuel. All rights reserved.</p>
     </div>
 </footer>
 @livewireScripts

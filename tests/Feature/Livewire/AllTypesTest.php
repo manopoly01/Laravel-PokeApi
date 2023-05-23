@@ -8,7 +8,7 @@ use Livewire\Livewire;
 use Mockery\MockInterface;
 
 it('can show all the types on the page', function (): void {
-    $typesArray = [
+    $typesCollection = collect([
         [
             'name' => 'normal',
             'url' => 'https://pokeapi.co/api/v2/type/1/',
@@ -25,10 +25,10 @@ it('can show all the types on the page', function (): void {
             'name' => 'poison',
             'url' => 'https://pokeapi.co/api/v2/type/4/',
         ],
-    ];
+    ]);
 
-    $this->mock(PokemonService::class, function (MockInterface $mock) use ($typesArray): void {
-        $mock->shouldReceive('getTypes')->once()->andReturn($typesArray);
+    $this->mock(PokemonService::class, function (MockInterface $mock) use ($typesCollection): void {
+        $mock->shouldReceive('getTypes')->once()->andReturn($typesCollection);
     });
 
     Livewire::test(AllTypes::class)

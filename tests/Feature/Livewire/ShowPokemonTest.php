@@ -8,32 +8,38 @@ use Livewire\Livewire;
 use Mockery\MockInterface;
 
 it('can show a single pokemon with all stats and evolutions', function (): void {
-    $pokemon = [
+    $pokemon = collect([
         'id' => 16,
         'name' => 'pidgey',
         'descriptions' => ['A common sight in forests and woods. It flaps its wings at ground level to kick up blinding sand.'],
         'height' => 11.5 / 10,
         'weight' => 130.7 / 10,
         'abilities' => ['keen-eye', 'tangled-feet'],
-        'hp' => 40,
-        'attack' => 45,
-        'defense' => 40,
-        'specialAttack' => 35,
-        'specialDefense' => 35,
-        'speed' => 56,
-        'noDamageTo' => [['name' => 'ghost']],
-        'noDamageFrom' => [['name' => 'ghost'], ['name' => 'ground']],
-        'halfDamageTo' => [['name' => 'rock'], ['name' => 'steel']],
-        'halfDamageFrom' => [['name' => 'fighting'], ['name' => 'bug']],
-        'doubleDamageTo' => [['name' => 'bug'], ['name' => 'grass']],
-        'doubleDamageFrom' => [['name' => 'electric'], ['name' => 'ice']],
-        'frontImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
-        'backImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/16.png',
-        'artwork' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/16.png',
-        'types' => [['type' => ['name' => 'normal']], ['type' => ['name' => 'flying']]],
-    ];
+        'stats' => [
+            'hp' => 40,
+            'attack' => 45,
+            'defense' => 40,
+            'special-attack' => 35,
+            'special-defense' => 35,
+            'speed' => 56,
+        ],
+        'damageRelations' => [
+            'noDamageTo' => [(object) ['name' => 'ghost']],
+            'noDamageFrom' => [(object) ['name' => 'ghost'], (object) ['name' => 'ground']],
+            'halfDamageTo' => [(object) ['name' => 'rock'], (object) ['name' => 'steel']],
+            'halfDamageFrom' => [(object) ['name' => 'fighting'], (object) ['name' => 'bug']],
+            'doubleDamageTo' => [(object) ['name' => 'bug'], (object) ['name' => 'grass']],
+            'doubleDamageFrom' => [(object) ['name' => 'electric'], (object) ['name' => 'ice']],
+        ],
+        'images' => [
+            'frontImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
+            'backImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/16.png',
+            'artwork' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/16.png',
+        ],
+        'types' => [(object) ['type' => (object) ['name' => 'normal']], (object) ['type' => (object) ['name' => 'flying']]],
+    ]);
 
-    $evolutions = [
+    $evolutions = collect([
         [
             'id' => '172',
             'name' => 'pichu',
@@ -46,7 +52,7 @@ it('can show a single pokemon with all stats and evolutions', function (): void 
             'id' => '26',
             'name' => 'raichu',
         ],
-    ];
+    ]);
 
     $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemon, $evolutions): void {
         $mock->shouldReceive('getByName')->once()->andReturn($pokemon);

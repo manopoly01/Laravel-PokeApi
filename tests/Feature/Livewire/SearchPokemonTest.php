@@ -8,7 +8,7 @@ use Livewire\Livewire;
 use Mockery\MockInterface;
 
 it('can search a pokemon and view all results', function (): void {
-    $pokemonList = [
+    $pokemonList = collect([
         [
             'id' => '1',
             'name' => 'bulbasaur',
@@ -21,7 +21,7 @@ it('can search a pokemon and view all results', function (): void {
             'id' => '3',
             'name' => 'venusaur',
         ],
-    ];
+    ]);
 
     $this->mock(PokemonService::class, function (MockInterface $mock) use ($pokemonList): void {
         $mock->shouldReceive('searchByPokemonName')->once()->andReturn($pokemonList);

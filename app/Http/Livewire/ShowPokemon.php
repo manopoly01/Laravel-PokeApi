@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Livewire;
 
 use App\Services\PokemonService;
+use Illuminate\Support\Collection;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Livewire\Component;
 
 class ShowPokemon extends Component
 {
-    public ?array $pokemon = null;
+    public ?Collection $pokemon = null;
     public ?string $name = null;
     public ?int $pokemon_id = null;
     public ?float $height = null;
@@ -35,33 +36,34 @@ class ShowPokemon extends Component
 
     public ?array $abilities = null;
     public ?array $descriptions = null;
-    public ?array $evolutionChain = null;
+    public ?Collection $evolutionChain = null;
 
     public function mount(string $name, PokemonService $pokemonService): void
     {
         $this->pokemon = $pokemonService->getByName($name, 1);
-        $this->name = $this->pokemon['name'];
-        $this->pokemon_id = $this->pokemon['id'];
-        $this->height = $this->pokemon['height'];
-        $this->weight = $this->pokemon['weight'];
-        $this->frontImg = $this->pokemon['frontImg'];
-        $this->backImg = $this->pokemon['backImg'];
-        $this->artwork = $this->pokemon['artwork'];
-        $this->types = $this->pokemon['types'];
-        $this->noDamageTo = $this->pokemon['noDamageTo'];
-        $this->noDamageFrom = $this->pokemon['noDamageFrom'];
-        $this->halfDamageTo = $this->pokemon['halfDamageTo'];
-        $this->halfDamageFrom = $this->pokemon['halfDamageFrom'];
-        $this->doubleDamageTo = $this->pokemon['doubleDamageTo'];
-        $this->doubleDamageFrom = $this->pokemon['doubleDamageFrom'];
-        $this->hp = $this->pokemon['hp'];
-        $this->attack = $this->pokemon['attack'];
-        $this->defense = $this->pokemon['defense'];
-        $this->specialAttack = $this->pokemon['specialAttack'];
-        $this->specialDefense = $this->pokemon['specialDefense'];
-        $this->speed = $this->pokemon['speed'];
-        $this->abilities = $this->pokemon['abilities'];
-        $this->descriptions = $this->pokemon['descriptions'];
+        $pokemon = $this->pokemon->toArray();
+        $this->name = $pokemon['name'];
+        $this->pokemon_id = $pokemon['id'];
+        $this->height = $pokemon['height'];
+        $this->weight = $pokemon['weight'];
+        $this->frontImg = $pokemon['images']['frontImg'];
+        $this->backImg = $pokemon['images']['backImg'];
+        $this->artwork = $pokemon['images']['artwork'];
+        $this->types = $pokemon['types'];
+        $this->noDamageTo = $pokemon['damageRelations']['noDamageTo'];
+        $this->noDamageFrom = $pokemon['damageRelations']['noDamageFrom'];
+        $this->halfDamageTo = $pokemon['damageRelations']['halfDamageTo'];
+        $this->halfDamageFrom = $pokemon['damageRelations']['halfDamageFrom'];
+        $this->doubleDamageTo = $pokemon['damageRelations']['doubleDamageTo'];
+        $this->doubleDamageFrom = $pokemon['damageRelations']['doubleDamageFrom'];
+        $this->hp = $pokemon['stats']['hp'];
+        $this->attack = $pokemon['stats']['attack'];
+        $this->defense = $pokemon['stats']['defense'];
+        $this->specialAttack = $pokemon['stats']['special-attack'];
+        $this->specialDefense = $pokemon['stats']['special-defense'];
+        $this->speed = $pokemon['stats']['speed'];
+        $this->abilities = $pokemon['abilities'];
+        $this->descriptions = $pokemon['descriptions'];
 
         $this->evolutionChain = $pokemonService->getEvolutionChain($name);
     }

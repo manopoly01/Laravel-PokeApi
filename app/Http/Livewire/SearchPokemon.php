@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Livewire;
 
 use App\Services\PokemonService;
+use Illuminate\Support\Collection;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Livewire\Component;
 
 class SearchPokemon extends Component
 {
-    public array $searchedList = [];
+    public ?Collection $searchedList = null;
 
     public string $name = '';
 

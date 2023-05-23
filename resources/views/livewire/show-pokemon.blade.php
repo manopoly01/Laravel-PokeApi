@@ -23,7 +23,7 @@
                 <div class="flex items-center">
                     <span class="mr-1 text-sm font-semibold">Types:</span>
                     @foreach($types as $type)
-                        <a href="/type/{{ $type['type']['name'] }}" class="rounded-full mx-1 px-2 py-1 text-xs uppercase bg-pokemon-{{ $type['type']['name'] }}-bg text-pokemon-{{ $type['type']['name'] }}-text">{{ $type['type']['name'] }}</a>
+                        <x-type-label :name="$type->type->name" />
                     @endforeach
                 </div>
             </div>
@@ -61,19 +61,19 @@
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">No Damage To</span>
                         @foreach($noDamageTo as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Half Damage To</span>
                         @foreach($halfDamageTo as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Double Damage To</span>
                         @foreach($doubleDamageTo as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                 </div>
@@ -84,19 +84,19 @@
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">No Damage From</span>
                         @foreach($noDamageFrom as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Half Damage From</span>
                         @foreach($halfDamageFrom as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                     <div class="flex flex-wrap items-center mb-2">
                         <span class="mr-1 text-xs font-semibold">Double Damage From</span>
                         @foreach($doubleDamageFrom as $type)
-                            <x-type-button :name="$type['name']" />
+                            <x-type-label :name="$type->name" />
                         @endforeach
                     </div>
                 </div>
@@ -108,7 +108,7 @@
             <p class="uppercase font-semibold mb-2">Evolutions</p>
             <div class="flex justify-center">
                 @foreach($evolutionChain as $pokemon)
-                    <a class="flex flex-col items-center bg-gray-200 rounded-lg mx-3 my-2 p-3 hover:bg-gray-300 transition" href="/pokemon/{{ $pokemon['name'] }}">
+                    <a class="flex flex-col items-center {{ $pokemon_id == $pokemon['id'] ? 'bg-blue-200 hover:bg-blue-300' : 'bg-gray-200 hover:bg-gray-300' }} rounded-lg mx-3 my-2 p-3 transition" href="/pokemon/{{ $pokemon['name'] }}">
                         <img class="w-24 h-24" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ $pokemon['id'] }}.png" alt="{{ $pokemon['name'] }}-image">
                         <p class="text-center uppercase">{{ $pokemon['name'] }}</p>
                         <p class="text-center">#{{ $pokemon['id'] }}</p>

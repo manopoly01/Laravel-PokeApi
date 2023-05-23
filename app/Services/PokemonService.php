@@ -6,9 +6,8 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class PokemonService
 {
@@ -19,227 +18,174 @@ class PokemonService
         return Http::baseUrl(self::BASE_URL);
     }
 
-    public function getEvolutionChain(string $name): null|array
+    public function getEvolutionChain(string $name): null|Collection
     {
         $response = $this->getClient()->get('pokemon-species/' . $name);
-        $speciesData = $response->json();
+        $speciesData = $response->object();
 
         if ($speciesData == null) {
             return null;
         }
 
-        $evolutionChainResponse = $this->getClient()->get($speciesData['evolution_chain']['url']);
+        $evolutionChainResponse = $this->getClient()->get($speciesData->evolution_chain->url);
         $evolutionChainData = $evolutionChainResponse->json();
 
         $evolutions = $this->parseEvolutionChain($evolutionChainData['chain']);
 
-        $evolutionList = [];
-        foreach ($evolutions as $evolution) {
-            $evolutionList[] = [
+        return $evolutions->map(function ($evolution) {
+            return [
                 'id' => $evolution['id'],
                 'name' => $evolution['name'],
             ];
-        }
-
-        return $evolutionList;
+        });
     }
 
-    private function parseEvolutionChain(array $chain): array
+    private function parseEvolutionChain(array $chain): Collection
     {
-        $evolutions = [];
-
         $speciesName = $chain['species']['name'];
         $speciesId = basename(parse_url($chain['species']['url'], PHP_URL_PATH));
 
-        $evolutions[] = [
-            'id' => $speciesId,
-            'name' => $speciesName,
-        ];
+        $evolutions = collect([
+            [
+                'id' => $speciesId,
+                'name' => $speciesName,
+            ],
+        ]);
 
         if (isset($chain['evolves_to']) && count($chain['evolves_to']) > 0) {
             foreach ($chain['evolves_to'] as $evolution) {
-                $evolutions = array_merge($evolutions, $this->parseEvolutionChain($evolution));
+                $evolutions = $evolutions->merge($this->parseEvolutionChain($evolution));
             }
         }
 
         return $evolutions;
     }
 
-    public function searchByPokemonName(string $name): array
+    public function searchByPokemonName(string $name): Collection
     {
-        $pokemons = $this->getList(['limit' => 10000])['pokemonList'];
+        $pokemons = $this->getList(['limit' => 10000]);
 
-        return array_filter($pokemons, function ($pokemon) use ($name) {
+        return $pokemons->filter(function ($pokemon) use ($name) {
             return stripos($pokemon['name'], $name) !== false;
         });
     }
 
-    public function getList(array $url = null): array
+    public function getList(array $url = null): Collection
     {
         $response = $this->getClient()->get('pokemon/', $url);
 
-        $pokemons = $response->collect('results')->toArray();
+        $pokemons = $response->collect('results');
 
-        $pokemonList = [];
-        foreach ($pokemons as $pokemon) {
-            $pokemonList[] = [
+        return $pokemons->map(function ($pokemon) {
+            return [
                 'id' => basename(parse_url($pokemon['url'], PHP_URL_PATH)),
                 'name' => $pokemon['name'],
             ];
-        }
-
-        return [
-            'pokemonList' => $pokemonList,
-        ];
+        });
     }
 
-    public function getByName(string $name, int $maxDescriptions = null): array
+    public function getByName(string $name, int $maxDescriptions = null): Collection
     {
+        // Get Pokemon
         $response = $this->getClient()->get('pokemon/' . $name);
-        $pokemon = $response->collect()->toArray();
+        $pokemon = $response->object();
 
-        $types = $pokemon['types'];
-        $noDamageTo = [];
-        $noDamageFrom = [];
-        $halfDamageTo = [];
-        $halfDamageFrom = [];
-        $doubleDamageTo = [];
-        $doubleDamageFrom = [];
+        // Damage Relations
+        $types = collect($pokemon->types);
+        $damageRelations = $types->map(function ($type) {
+            $typeResponse = $this->getClient()->get('type/' . $type->type->name);
+            $typeData = $typeResponse->object();
+            $damageRelations = $typeData->damage_relations;
 
-        foreach ($types as $type) {
-            $typeResponse = $this->getClient()->get('type/' . $type['type']['name']);
-            $typeData = $typeResponse->json();
+            return [
+                'noDamageTo' => $damageRelations->no_damage_to,
+                'noDamageFrom' => $damageRelations->no_damage_from,
+                'halfDamageTo' => $damageRelations->half_damage_to,
+                'halfDamageFrom' => $damageRelations->half_damage_from,
+                'doubleDamageTo' => $damageRelations->double_damage_to,
+                'doubleDamageFrom' => $damageRelations->double_damage_from,
+            ];
+        })->collapse();
 
-            $damageRelations = $typeData['damage_relations'];
-            $noDamageTo = array_merge($noDamageTo, $damageRelations['no_damage_to']);
-            $noDamageFrom = array_merge($noDamageFrom, $damageRelations['no_damage_from']);
-            $halfDamageTo = array_merge($halfDamageTo, $damageRelations['half_damage_to']);
-            $halfDamageFrom = array_merge($halfDamageFrom, $damageRelations['half_damage_from']);
-            $doubleDamageTo = array_merge($doubleDamageTo, $damageRelations['double_damage_to']);
-            $doubleDamageFrom = array_merge($doubleDamageFrom, $damageRelations['double_damage_from']);
-        }
+        // Pokemon Stats
+        $stats = collect($pokemon->stats);
 
-        $stats = $pokemon['stats'];
+        $stats = $stats->reduce(function ($carry, $stat) {
+            $statName = strtolower($stat->stat->name);
+            $statValue = $stat->base_stat;
 
-        $hp = $attack = $defense = $specialAttack = $specialDefense = $speed = 0;
+            return $carry->merge([$statName => $statValue]);
+        }, collect());
 
-        foreach ($stats as $stat) {
-            $statName = strtolower($stat['stat']['name']);
-            $statValue = $stat['base_stat'];
+        // Pokemon Abilities
+        $abilities = collect($pokemon->abilities);
 
-            switch ($statName) {
-                case 'hp':
-                    $hp = $statValue;
-                    break;
-                case 'attack':
-                    $attack = $statValue;
-                    break;
-                case 'defense':
-                    $defense = $statValue;
-                    break;
-                case 'special-attack':
-                    $specialAttack = $statValue;
-                    break;
-                case 'special-defense':
-                    $specialDefense = $statValue;
-                    break;
-                case 'speed':
-                    $speed = $statValue;
-                    break;
+        $abilityNames = $abilities->map(function ($ability) {
+            return ucfirst($ability->ability->name);
+        });
+
+        // Pokemon Descriptions
+        $speciesResponse = $this->getClient()->get('pokemon-species/' . $pokemon->species->name);
+        $speciesData = $speciesResponse->object();
+
+        $flavorTextEntries = collect($speciesData->flavor_text_entries);
+
+        $descriptions = $flavorTextEntries->reduce(function ($carry, $text) use ($maxDescriptions) {
+            if ($text->language->name === 'en' && count($carry) < $maxDescriptions) {
+                $carry[] = str_replace(["\n", "\f"], ' ', ucfirst($text->flavor_text));
             }
-        }
 
-        $abilities = $pokemon['abilities'];
+            return $carry;
+        }, collect());
 
-        $abilityNames = [];
-
-        foreach ($abilities as $ability) {
-            $abilityName = ucfirst($ability['ability']['name']);
-            $abilityNames[] = $abilityName;
-        }
-
-        $speciesResponse = $this->getClient()->get('pokemon-species/' . $pokemon['species']['name']);
-        $speciesData = $speciesResponse->json();
-
-        $flavorTextEntries = $speciesData['flavor_text_entries'];
-
-        $descriptions = [];
-        $count = 0;
-
-        foreach ($flavorTextEntries as $entry) {
-            if ($entry['language']['name'] === 'en') {
-                $description = str_replace(["\n", "\f"], ' ', ucfirst($entry['flavor_text']));
-                $descriptions[] = $description;
-                $count++;
-
-                if ($maxDescriptions !== null && $count >= $maxDescriptions) {
-                    break;
-                }
-            }
-        }
-
-        return [
-            'id' => $pokemon['id'],
-            'name' => $pokemon['name'],
-            'descriptions' => $descriptions,
-            'height' => $pokemon['height'] / 10,
-            'weight' => $pokemon['weight'] / 10,
-            'abilities' => $abilityNames,
-            'hp' => $hp,
-            'attack' => $attack,
-            'defense' => $defense,
-            'specialAttack' => $specialAttack,
-            'specialDefense' => $specialDefense,
-            'speed' => $speed,
-            'noDamageTo' => $noDamageTo,
-            'noDamageFrom' => $noDamageFrom,
-            'halfDamageTo' => $halfDamageTo,
-            'halfDamageFrom' => $halfDamageFrom,
-            'doubleDamageTo' => $doubleDamageTo,
-            'doubleDamageFrom' => $doubleDamageFrom,
-            'frontImg' => $pokemon['sprites']['front_default'],
-            'backImg' => $pokemon['sprites']['back_default'],
-            'artwork' => $pokemon['sprites']['other']['official-artwork']['front_default'],
-            'types' => $types,
-        ];
+        // Return Collection
+        return collect([
+            'id' => $pokemon->id,
+            'name' => $pokemon->name,
+            'descriptions' => $descriptions->toArray(),
+            'height' => $pokemon->height / 10,
+            'weight' => $pokemon->weight / 10,
+            'abilities' => $abilityNames->toArray(),
+            'stats' => $stats->toArray(),
+            'damageRelations' => $damageRelations->toArray(),
+            'images' => [
+                'frontImg' => $pokemon->sprites->front_default,
+                'backImg' => $pokemon->sprites->back_default,
+                'artwork' => $pokemon->sprites->other->{'official-artwork'}->front_default,
+            ],
+            'types' => $types->toArray(),
+        ]);
     }
 
-    public function getTypes(): array
+    public function getTypes(): Collection
     {
         $response = $this->getClient()->get('type/');
 
-        $result = $response->collect('results')->toArray();
+        $result = $response->collect('results');
 
-        return array_slice($result, 0, -2);
+        return $result->slice(0, $result->count() - 2);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function getByType(string $type, $perPage = 20, array $url = null): LengthAwarePaginator
     {
         $response = $this->getClient()->get('type/' . $type, $url);
-        $pokemons = $response->collect('pokemon')->toArray();
+        $pokemons = $response->collect('pokemon');
 
-        $pokemonList = [];
-        foreach ($pokemons as $pokemon) {
+        $pokemonList = $pokemons->map(function ($pokemon) {
             $pokemonUrl = $pokemon['pokemon']['url'];
             $pokemonId = basename(parse_url($pokemonUrl, PHP_URL_PATH));
 
-            $pokemonList[] = [
+            return [
                 'id' => $pokemonId,
                 'name' => $pokemon['pokemon']['name'],
             ];
-        }
+        });
 
         $currentPage = request()->get('page', 1);
 
-        $pokemonCollection = collect($pokemonList);
-
         return new LengthAwarePaginator(
-            $pokemonCollection->forPage($currentPage, $perPage),
-            $pokemonCollection->count(),
+            $pokemonList->forPage($currentPage, $perPage),
+            $pokemonList->count(),
             $perPage,
             $currentPage,
             ['path' => request()->url()]

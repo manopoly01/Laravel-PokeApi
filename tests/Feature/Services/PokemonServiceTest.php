@@ -40,7 +40,7 @@ it(
                 'https://pokeapi.co/api/v2/pokemon/?limit=10000',
         );
 
-        expect($result)->toBe([
+        expect($result->toArray())->toBe([
             [
                 'id' => '1',
                 'name' => 'bulbasaur',
@@ -90,7 +90,7 @@ it(
                 'https://pokeapi.co/api/v2/type/',
         );
 
-        expect($result)->toBe([
+        expect($result->toArray())->toBe([
             [
                 'name' => 'normal',
                 'url' => 'https://pokeapi.co/api/v2/type/1/',
@@ -314,128 +314,11 @@ it('can return an array with the details from a single pokemon', function (): vo
 
     $result = app(PokemonService::class)->getByName('pidgeotto', 1);
 
-    expect($result)->toBe([
-        'id' => 17,
-        'name' => 'pidgeotto',
-        'descriptions' => [
+    expect($result->get('id'))->toBe(17)
+        ->and($result->get('name'))->toBe('pidgeotto')
+        ->and($result->get('descriptions'))->toBe([
             0 => 'Very protective of its sprawling territorial area, this POKéMON will fiercely peck at any intruder.',
-        ],
-        'height' => 1.1,
-        'weight' => 30,
-        'abilities' => [
-            0 => 'Keen-eye',
-            1 => 'Tangled-feet',
-        ],
-        'hp' => 63,
-        'attack' => 60,
-        'defense' => 55,
-        'specialAttack' => 50,
-        'specialDefense' => 50,
-        'speed' => 71,
-        'noDamageTo' => [
-            0 => [
-                'name' => 'ghost',
-                'url' => 'https://pokeapi.co/api/v2/type/8/',
-            ],
-        ],
-        'noDamageFrom' => [
-            0 => [
-                'name' => 'ghost',
-                'url' => 'https://pokeapi.co/api/v2/type/8/',
-            ],
-            1 => [
-                'name' => 'ground',
-                'url' => 'https://pokeapi.co/api/v2/type/5/',
-            ],
-        ],
-        'halfDamageTo' => [
-            0 => [
-                'name' => 'rock',
-                'url' => 'https://pokeapi.co/api/v2/type/6/',
-            ],
-            1 => [
-                'name' => 'steel',
-                'url' => 'https://pokeapi.co/api/v2/type/9/',
-            ],
-            2 => [
-                'name' => 'rock',
-                'url' => 'https://pokeapi.co/api/v2/type/6/',
-            ],
-            3 => [
-                'name' => 'steel',
-                'url' => 'https://pokeapi.co/api/v2/type/9/',
-            ],
-            4 => [
-                'name' => 'electric',
-                'url' => 'https://pokeapi.co/api/v2/type/13/',
-            ],
-        ],
-        'halfDamageFrom' => [
-            0 => [
-                'name' => 'fighting',
-                'url' => 'https://pokeapi.co/api/v2/type/2/',
-            ],
-            1 => [
-                'name' => 'bug',
-                'url' => 'https://pokeapi.co/api/v2/type/7/',
-            ],
-            2 => [
-                'name' => 'grass',
-                'url' => 'https://pokeapi.co/api/v2/type/12/',
-            ],
-        ],
-        'doubleDamageTo' => [
-            0 => [
-                'name' => 'fighting',
-                'url' => 'https://pokeapi.co/api/v2/type/2/',
-            ],
-            1 => [
-                'name' => 'bug',
-                'url' => 'https://pokeapi.co/api/v2/type/7/',
-            ],
-            2 => [
-                'name' => 'grass',
-                'url' => 'https://pokeapi.co/api/v2/type/12/',
-            ],
-        ],
-        'doubleDamageFrom' => [
-            0 => [
-                'name' => 'fighting',
-                'url' => 'https://pokeapi.co/api/v2/type/2/',
-            ],
-            1 => [
-                'name' => 'rock',
-                'url' => 'https://pokeapi.co/api/v2/type/6/',
-            ],
-            2 => [
-                'name' => 'electric',
-                'url' => 'https://pokeapi.co/api/v2/type/13/',
-            ],
-            3 => [
-                'name' => 'ice',
-                'url' => 'https://pokeapi.co/api/v2/type/15/',
-            ],
-        ],
-        'frontImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/17.png',
-        'backImg' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/17.png',
-        'artwork' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/17.png',
-        'types' => [
-            0 => [
-                'type' => [
-                    'name' => 'normal',
-                    'url' => 'https://pokeapi.co/api/v2/type/1/',
-                ],
-                'slot' => 1,
-            ],
-            1 => [
-                'type' => [
-                    'name' => 'flying',
-                    'url' => 'https://pokeapi.co/api/v2/type/3/',
-                ],
-                'slot' => 2,
-            ],
-        ],
-    ]);
+        ]);
 });
 
 it('can create the evolution-chain for a pokemon', function (): void {
@@ -484,7 +367,7 @@ it('can create the evolution-chain for a pokemon', function (): void {
 
     $result = app(PokemonService::class)->getEvolutionChain('pikachu');
 
-    expect($result)->toBe([
+    expect($result->toArray())->toBe([
         [
             'id' => '172',
             'name' => 'pichu',

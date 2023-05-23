@@ -15,7 +15,7 @@ class AllTypes extends Component
 
     public function mount(PokemonService $pokemonService): void
     {
-        $this->typesList = $pokemonService->getTypes();
+        $this->typesList = $pokemonService->getTypes()->toArray();
     }
 
     public function render(): View|Factory
