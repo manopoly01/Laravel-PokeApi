@@ -2,22 +2,31 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.8",
         "laravel/sanctum": "^3.2",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "livewire/livewire": "^2.12"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
-        "laravel/pint": "^1.0",
+        "hosttech/defaults": "^0.2.5",
+        "laravel/pint": "^1.10",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
+        "nunomaduro/larastan": "^2.6",
+        "pestphp/pest": "^2.6",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.1",
+        "rector/rector": "^0.16.0",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
@@ -45,6 +54,31 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "setup": [
+            "docker-compose build",
+            "docker-compose up -d",
+            "docker-compose exec <project> composer update"
+        ],
+        "setup-local": [
+            "composer update"
+        ],
+        "refactor:lint": "vendor/bin/pint -v --config vendor/hosttech/defaults/pint.json",
+        "refactor:rector": "rector",
+        "refactor:rector:no-cache": "rector --clear-cache",
+        "refactor": [
+            "@refactor:rector",
+            "@refactor:lint"
+        ],
+        "test:lint": "pint -v --test --config vendor/hosttech/defaults/pint.json",
+        "test:rector": "rector --dry-run",
+        "test:pest": "pest --colors=always --coverage",
+        "test:types": "phpstan analyse",
+        "test": [
+            "@test:lint",
+            "@test:rector",
+            "@test:types",
+            "@test:pest"
         ]
     },
     "extra": {
@@ -62,5 +96,15 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "3": {
+            "type": "composer",
+            "url": "https://git.hosttech.eu/api/v4/group/3/-/packages/composer/"
+        },
+        "0": {
+            "type": "composer",
+            "url": "https://git.hosttech.eu/api/v4/group/3/-/packages/composer/"
+        }
+    }
 }

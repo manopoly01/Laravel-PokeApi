@@ -1,5 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Livewire\AllPokemons;
+use App\Http\Livewire\AllTypes;
+use App\Http\Livewire\ShowPokemon;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +18,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', AllTypes::class);
+Route::get('/type/{type}', AllPokemons::class);
+Route::get('/pokemon/{name}', ShowPokemon::class);
